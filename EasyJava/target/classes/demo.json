@@ -1,0 +1,18 @@
+{
+  id: {
+    date: "null"
+  },
+  name: {
+    date: null
+  },
+  date: {
+    date: null
+  },
+  dateTime: {
+    date: null
+  },
+  age: {
+    date: null,
+    comment: 年龄
+  }
+}

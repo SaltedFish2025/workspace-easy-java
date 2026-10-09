@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.easy.mapper.DemoMapper">
+	<!--实体类映射-->
+	<resultMap id="result_type" type="com.easy.entity.po.Demo">
+		<!--有人很懒什么都没写-->
+		<id column="id" property="id"/>
+		<!--有人很懒什么都没写-->
+		<result column="name" property="name"/>
+		<!--有人很懒什么都没写-->
+		<result column="date" property="date"/>
+		<!--有人很懒什么都没写-->
+		<result column="date_time" property="dateTime"/>
+		<!--年龄-->
+		<result column="age" property="age"/>
+		<!--有人很懒什么都没写-->
+		<result column="uuid" property="uuid"/>
+	</resultMap>
+
+	<!-- __________________________________________段落sql__________________________________________ -->
+	<!--可复用的常量绑定-->
+	<sql id="bean_mapper_constants">
+		<if test="_parameter != null">
+			<bind name="queryKey" value="@com.easy.mapper.bean.BeanMapper@QUERY_FIELD_NAME"/>
+			<bind name="beanKey" value="@com.easy.mapper.bean.BeanMapper@BEAN_FIELD_NAME"/>
+			<bind name="listKey" value="@com.easy.mapper.bean.BeanMapper@LIST_FIELD_NAME"/>
+			<bind name="idKey" value="@com.easy.mapper.bean.BeanMapper@ID_FIELD_NAME"/>
+			<bind name="query" value="_parameter.containsKey(queryKey) ? _parameter.get(queryKey) : null"/>
+			<bind name="bean" value="_parameter.containsKey(beanKey) ? _parameter.get(beanKey) : null"/>
+			<bind name="list" value="_parameter.containsKey(listKey) ? _parameter.get(listKey) : null"/>
+			<bind name="id" value="_parameter.containsKey(idKey) ? _parameter.get(idKey) : null"/>
+		</if>
+	</sql>
+
+	<!--拓展条件查询-->
+	<sql id="expand_condition_query">
+		<include refid="bean_mapper_constants"/>
+		<trim prefixOverrides="and">
+			<if test="query.idStart != null">
+				and id &gt;= #{query.idStart}
+			</if>
+			<if test="query.idEnd != null">
+				and id &lt;= #{query.idEnd}
+			</if>
+			<if test="query.idList != null and query.idList.size() > 0 ">
+				and id IN 
+				<foreach collection="query.idList" item="id" open="(" separator="," close=")">
+ 					#{id}
+				</foreach>
+			</if>
+			<if test="query.nameFuzzy != null and query.nameFuzzy != ''">
+				and name &lt;= #{query.nameFuzzy}
+			</if>
+			<if test="query.nameList != null and query.nameList.size() > 0 ">
+				and name IN 
+				<foreach collection="query.nameList" item="id" open="(" separator="," close=")">
+ 					#{id}
+				</foreach>
+			</if>
+			<if test="query.dateStart != null">
+				and date &gt;= #{query.dateStart, jdbcType=DATE}
+			</if>
+			<if test="query.dateEnd != null">
+				and date &lt;= #{query.dateEnd, jdbcType=DATE}
+			</if>
+			<if test="query.dateList != null and query.dateList.size() > 0 ">
+				and date IN 
+				<foreach collection="query.dateList" item="id" open="(" separator="," close=")">
+ 					#{id}
+				</foreach>
+			</if>
+			<if test="query.dateTimeStart != null">
+				and date_time &gt;= #{query.dateTimeStart, jdbcType=TIMESTAMP}
+			</if>
+			<if test="query.dateTimeEnd != null">
+				and date_time &lt;= #{query.dateTimeEnd, jdbcType=TIMESTAMP}
+			</if>
+			<if test="query.dateTimeList != null and query.dateTimeList.size() > 0 ">
+				and date_time IN 
+				<foreach collection="query.dateTimeList" item="id" open="(" separator="," close=")">
+ 					#{id}
+				</foreach>
+			</if>
+			<if test="query.ageStart != null">
+				and age &gt;= #{query.ageStart}
+			</if>
+			<if test="query.ageEnd != null">
+				and age &lt;= #{query.ageEnd}
+			</if>
+			<if test="query.ageList != null and query.ageList.size() > 0 ">
+				and age IN 
+				<foreach collection="query.ageList" item="id" open="(" separator="," close=")">
+ 					#{id}
+				</foreach>
+			</if>
+			<if test="query.uuidFuzzy != null and query.uuidFuzzy != ''">
+				and uuid &lt;= #{query.uuidFuzzy}
+			</if>
+			<if test="query.uuidList != null and query.uuidList.size() > 0 ">
+				and uuid IN 
+				<foreach collection="query.uuidList" item="id" open="(" separator="," close=")">
+ 					#{id}
+				</foreach>
+			</if>
+		</trim>
+	</sql>
+
+	<!--查询拓展功能-->
+	<sql id="expand_expand_function">
+		<include refid="bean_mapper_constants"/>
+		<if test="query.order != null and query.order != ''">
+			order by ${query.order}
+		</if>
+		<if test="query.pageOffset != null and query.pageSize != null">
+			limit #{query.pageOffset},#{query.pageSize}
+		</if>
+	</sql>
+
+	<!--裁剪字段赋值映射-->
+	<sql id="trim_update_assignment">
+		<include refid="bean_mapper_constants"/>
+		<trim suffixOverrides=",">
+			<if test="bean.name != null">name=#{bean.name},</if>
+			<if test="bean.date != null">date=#{bean.date},</if>
+			<if test="bean.dateTime != null">date_time=#{bean.dateTime},</if>
+			<if test="bean.age != null">age=#{bean.age},</if>
+			id=id
+		</trim>
+	</sql>
+
+	<!--裁剪insert字段-->
+	<sql id="trim_all_field">
+		<include refid="bean_mapper_constants"/>
+		<trim suffixOverrides=",">
+			id,
+			name,
+			date,
+			date_time,
+			age,
+			uuid,
+		</trim>
+	</sql>
+
+	<!--裁剪字段映射-->
+	<sql id="trim_insert_field_mapping">
+		<if test="!_parameter.containsKey(LIST_KEY)">
+			<include refid="bean_mapper_constants"/>
+		</if>
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<choose>
+				<when test="bean.id != null">#{bean.id},</when>
+				<otherwise>default,</otherwise>
+			</choose>
+			<choose>
+				<when test="bean.name != null">#{bean.name},</when>
+				<otherwise>default,</otherwise>
+			</choose>
+			<choose>
+				<when test="bean.date != null">#{bean.date},</when>
+				<otherwise>default,</otherwise>
+			</choose>
+			<choose>
+				<when test="bean.dateTime != null">#{bean.dateTime},</when>
+				<otherwise>default,</otherwise>
+			</choose>
+			<choose>
+				<when test="bean.age != null">#{bean.age},</when>
+				<otherwise>default,</otherwise>
+			</choose>
+			<choose>
+				<when test="bean.uuid != null">#{bean.uuid},</when>
+				<otherwise>default,</otherwise>
+			</choose>
+		</trim>
+	</sql>
+
+
+	<!-- __________________________________________select__________________________________________ -->
+	<!--根据条件集查询结果集-->
+	<select id="selectList" resultMap="result_type" parameterType="com.easy.entity.query.DemoQuery">
+		select 
+		<include refid="trim_all_field"/>
+		from demo
+		<where>
+			<include refid="expand_condition_query"/>
+		</where>
+		<include refid="expand_expand_function"/>
+	</select>
+
+	<!--根据条件集查询总数-->
+	<select id="selectCount" resultType="java.lang.Integer" parameterType="com.easy.entity.query.DemoQuery">
+		select count(1) from demo
+		<where>
+			<include refid="expand_condition_query"/>
+		</where>
+	</select>
+
+	<!-- __________________________________________insert__________________________________________ -->
+	<!--根据数据集插入数据-->
+	<insert id="insert" parameterType="com.easy.entity.po.Demo" useGeneratedKeys="true" keyProperty="id">
+		insert into demo ( 
+		<include refid="trim_all_field"/>
+		) values 
+		<include refid="trim_insert_field_mapping"/>
+	</insert>
+
+	<!--根据数据集批量插入数据-->
+	<insert id="insertBatch" useGeneratedKeys="true" keyProperty="id">
+		<include refid="bean_mapper_constants"/>
+		insert into demo ( 
+		<include refid="trim_all_field"/>
+		) values 
+		<foreach collection="list" item="bean" separator="," >
+			<include refid="trim_insert_field_mapping"/>
+		</foreach>
+	</insert>
+
+	<!--根据数据集插入数据或修改[需有主键或唯一键]-->
+	<insert id="insertOrUpdate" parameterType="com.easy.entity.po.Demo" useGeneratedKeys="true" keyProperty="id">
+		insert into demo ( 
+		<include refid="trim_all_field"/>
+		) values 
+		<include refid="trim_insert_field_mapping"/>
+		on duplicate key update
+		<include refid="trim_update_assignment"/>
+	</insert>
+
+	<!-- __________________________________________update__________________________________________ -->
+	<!--根据条件集更新数据集[谨慎使用]-->
+	<update id="updateByCondition">
+		update demo set
+		<include refid="trim_update_assignment"/>
+		where
+		<include refid="expand_condition_query"/>
+	</update>
+
+	<!--根据id更新数据集-->
+	<update id="updateById">
+		<include refid="bean_mapper_constants"/>
+		update demo set
+		<include refid="trim_update_assignment"/>
+		where id = #{id}
+	</update>
+
+	<!-- __________________________________________delete__________________________________________ -->
+	<!--根据条件集删除[谨慎使用]-->
+	<delete id="deleteByCondition">
+		delete from demo
+		where
+		<include refid="expand_condition_query"/>
+	</delete>
+
+	<!--根据id删除数据集-->
+	<delete id="deleteById">
+		<include refid="bean_mapper_constants"/>
+		delete
+		from demo
+		where id in 
+		<foreach collection="list" item="id" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

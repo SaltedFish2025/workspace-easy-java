@@ -1,0 +1,46 @@
+package com.easy.service.impl.bean;
+
+import com.easy.utils.PageResult;
+
+import java.util.List;
+
+/**
+ * 公共基础功能接口
+ */
+public interface BeanServiceImpl<T, P, ID> {
+
+    /**
+     * 批量插入数据
+     */
+    Integer insertBatch(List<T> list);
+
+    /**
+     * 根据参数查找结果
+     */
+    PageResult<T> selectList(P p);
+
+    /**
+     * 根据条件更新数据
+     * ⚠️ 警告：请确保 query 对象中至少包含一个非空字段作为 WHERE 条件，
+     * 否则会导致全表更新！如果仅需根据主键更新，请使用 updateById 方法。
+     */
+    Integer updateByCondition(T b, P p);
+
+    /**
+     * 根据主键更新数据（安全）
+     */
+    Integer updateById(T b, ID id);
+
+    /**
+     * 根据条件删除数据
+     * ⚠️ 警告：请确保 query 对象中至少包含一个非空字段作为 WHERE 条件，
+     * 否则会导致全表删除！如果仅需根据主键删除，请使用 deleteById 方法。
+     */
+    Integer deleteByCondition(P p);
+
+    /**
+     * 根据主键删除数据（安全）
+     */
+    Integer deleteById(List<ID> id);
+
+}

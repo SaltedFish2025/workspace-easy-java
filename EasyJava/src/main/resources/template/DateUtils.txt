@@ -1,0 +1,45 @@
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+/**
+ * 时间格式化工具
+ * [y:年,M:月,d:日,H:时,m:分,s:秒]
+ */
+public class DateUtils {
+
+    public final static String DATE_FORMAT = "yyyy-MM-dd";
+    public final static String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
+    /**
+     * Date转字符串
+     *
+     * @param date       日期对象
+     * @param dateFormat 日期格式化结构
+     * @return 日期格式字符串
+     */
+    public static String format(Date date, String dateFormat) {
+        if (date != null) {
+            return new SimpleDateFormat(dateFormat).format(date);
+        }
+        return null;
+    }
+
+
+    /**
+     * 字符串转Date
+     *
+     * @param dateStr    日期字符串
+     * @param dateFormat 日期格式化结构
+     * @return 日期对象
+     */
+    public static Date parse(String dateStr, String dateFormat) {
+        Date date = null;
+        try {
+            date = new SimpleDateFormat(dateFormat).parse(dateStr);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        return date;
+    }
+}
