@@ -36,13 +36,13 @@ public class SpringTestV1 {
 
     @Test
     public void demo(){
-
+        demoMapper.insert(null);
 
     }
 
     @Test
     public void select() {
-        demoService.insertBatch(null);
+
 
 
 
@@ -94,25 +94,6 @@ public class SpringTestV1 {
 
     }
 
-    public static void main(String[] args) {
-        test("1",null);
 
-    }
-
-    public static void test(String... str) {
-        System.out.println(str);
-        if (str != null) {
-            System.out.println(Arrays.toString(str));
-        }
-        // 1. 转为可变 List
-        List<String> list = new ArrayList<>(Arrays.asList(str));
-        list.removeIf(Objects::isNull);
-        String[] newArray = list.toArray(new String[0]);
-        test2(newArray);
-    }
-    public static void test2(String... str) {
-        // 使用str
-        System.out.println(Arrays.toString(str));
-    }
 
 }

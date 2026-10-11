@@ -1,34 +1,39 @@
 package com.easy.mapper.bean;
 
-import org.apache.ibatis.executor.parameter.ParameterHandler;
+import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.plugin.*;
+import org.apache.ibatis.executor.Executor;
+import org.apache.ibatis.session.ResultHandler;
+import org.apache.ibatis.session.RowBounds;
 import org.springframework.stereotype.Component;
 
-import java.sql.PreparedStatement;
 import java.util.Map;
 import java.util.Properties;
 
-
-@Component
-@Intercepts({
-        @Signature(
-                type = ParameterHandler.class,
-                method = "setParameters",
-                args = {PreparedStatement.class}
-        )
-})
 /**
  * SQL操作参数非空过滤器
  */
+@Component
+@Intercepts({
+        @Signature(
+                type = Executor.class,
+                method = "query",
+                args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class}
+        ),
+        @Signature(
+                type = Executor.class,
+                method = "update",
+                args = {MappedStatement.class, Object.class}
+        )
+})
 public class ValidationInterceptor implements Interceptor {
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
-        ParameterHandler parameterHandler = (ParameterHandler) invocation.getTarget();
-        Object parameterObject = parameterHandler.getParameterObject();
-        if (parameterObject == null) {
+        Object arg = invocation.getArgs()[1];
+        if (arg == null) {
             throw new IllegalArgumentException("传入的参数不能为空！");
-        } else if (parameterObject instanceof Map) {
-            Map<?, ?> map = (Map<?, ?>) parameterObject;
+        } else if (arg instanceof Map) {
+            Map<?, ?> map = (Map<?, ?>) arg;
             for (Object o : map.values()) {
                 if (o == null) {
                     throw new IllegalArgumentException("传入的参数不能为空！");
